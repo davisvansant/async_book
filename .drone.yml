@@ -2,7 +2,7 @@ kind: pipeline
 name: default
 
 steps:
-- name: async_rs
+- name: async_book
   image: rust:1.42.0
   commands:
   - rustup component add clippy
