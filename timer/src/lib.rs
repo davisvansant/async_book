@@ -52,12 +52,3 @@ impl TimerFuture {
         TimerFuture { shared_state }
     }
 }
-
-#[tokio::main]
-async fn main() {
-    let duration = Duration::from_secs(5);
-    // let time = TimerFuture::new(duration).await;
-    // println!("{:?}", time);
-    // println!("Hello, world!");
-    TimerFuture::new(duration).await;
-}
