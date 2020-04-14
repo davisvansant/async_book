@@ -3,5 +3,6 @@ members = [
   "primer",
   "echo",
   "timer",
-  "executor"
+  "executor",
+  "async_await"
 ]
