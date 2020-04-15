@@ -4,5 +4,6 @@ members = [
   "echo",
   "timer",
   "executor",
-  "async_await"
+  "async_await",
+  "pinning"
 ]
