@@ -3,7 +3,7 @@ use futures::{
     pin_mut,
     select,
     future,
-    stream::{Stream, StreamExt, FusedStream},
+    stream::{Stream, StreamExt, FusedStream, FuturesUnordered},
 };
 
 async fn task_one() {}
@@ -58,15 +58,16 @@ async fn add_two_streams(
 }
 
 async fn get_new_num() -> u8 { 5 }
-async fn run_on_new_num(_: u8) {}
+async fn run_on_new_num(_: u8) -> u8 { 5 }
 
 async fn run_loop(
     mut interval_timer: impl Stream<Item = ()> + FusedStream + Unpin,
     starting_num: u8,
 ) {
-    let run_on_new_num_fut = run_on_new_num(starting_num).fuse();
+    let mut run_on_new_num_futs = FuturesUnordered::new();
+    run_on_new_num_futs.push(run_on_new_num(starting_num));
     let get_new_num_fut = Fuse::terminated();
-    pin_mut!(run_on_new_num_fut, get_new_num_fut);
+    pin_mut!(get_new_num_fut);
 
     loop {
         select! {
@@ -75,7 +76,12 @@ async fn run_loop(
                     get_new_num_fut.set(get_new_num().fuse());
                 }
             },
-            () = run_on_new_num_fut => {},
+            new_num = get_new_num_fut => {
+                run_on_new_num_futs.push(run_on_new_num(new_num));
+            },
+            res = run_on_new_num_futs.select_next_some() => {
+                println!("run_on_new_num_fut returned {:?}", res);
+            },
             complete => panic!("`interval_timer` completed unexepectedly"),
         }
     }
