@@ -2,6 +2,7 @@ use futures::{
     future::FutureExt,
     pin_mut,
     select,
+    future,
 };
 
 async fn task_one() {}
@@ -17,6 +18,23 @@ async fn race_tasks() {
         () = t1 => println!("task one completed first"),
         () = t2 => println!("task two completed first"),
     }
+}
+
+async fn count() {
+    let mut a_fut = future::ready(4);
+    let mut b_fut = future::ready(6);
+    let mut total = 0;
+
+    loop {
+        select! {
+            a = a_fut => total += a,
+            b = b_fut => total += b,
+            complete => break,
+            default => unreachable!(),
+        };
+    }
+
+    assert_eq!(total, 10);
 }
 
 #[cfg(test)]
