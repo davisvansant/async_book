@@ -7,5 +7,6 @@ members = [
   "async_await",
   "pinning",
   "streams",
-  "join"
+  "join",
+  "select"
 ]
