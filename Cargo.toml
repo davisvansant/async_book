@@ -8,5 +8,6 @@ members = [
   "pinning",
   "streams",
   "join",
-  "select"
+  "select",
+  "recursion"
 ]
